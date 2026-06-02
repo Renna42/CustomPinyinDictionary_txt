@@ -12,12 +12,16 @@ jobs:
       - name: Check the version of CustomPinyinDictionary
         id: check-version
         run: |
-          latest=$(gh --repo wuhgit/CustomPinyinDictionary \
-            release view --json body --jq ".body" | head -n 1 | cut -c 4-12)
           now=$(gh --repo "$GITHUB_REPOSITORY" \
             release list --json tagName --jq ".[0].tagName" 2>/dev/null || echo "")
+          latest=$(gh --repo wuhgit/CustomPinyinDictionary \
+            release view --json body --jq ".body" | head -n 1 | cut -c 4-12)
+
+          echo "NOW=$now"
+          echo "LATEST=$latest"
 
           if [ "$now" != "$latest" ]; then
+            echo "Versions are mismatch"
             echo "VERSION=$latest" >> "$GITHUB_ENV"
             echo "NEED_UPDATE=1" >> "$GITHUB_OUTPUT"
           fi
@@ -33,6 +37,7 @@ jobs:
             release download -p "CustomPinyinDictionary_Fcitx.dict"
           libime_pinyindict -d CustomPinyinDictionary_Fcitx.dict CustomPinyinDictionary_Fcitx.txt
           gh --repo "$GITHUB_REPOSITORY" \
-            release create "$VERSION" ./CustomPinyinDictionary_Fcitx.txt -t "$VERSION"
+            release create "$VERSION" ./CustomPinyinDictionary_Fcitx.txt -t "$VERSION" \
+            -n "Auto-generating txt version of CustomPinyinDictionary"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
