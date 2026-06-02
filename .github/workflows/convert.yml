@@ -14,7 +14,7 @@ jobs:
           latest=$(gh --repo wuhgit/CustomPinyinDictionary \
             release view --json body --jq ".body" | head -n 1 | cut -c 4-12)
           now=$(gh --repo "$GITHUB_REPOSITORY" \
-            release view --json tagName --jq ".tagName" 2>/dev/null || echo "")
+            release list --json tagName --jq ".[0].tagName" 2>/dev/null || echo "")
 
           if [ "$now" != "$latest" ]; then
             echo "NEED_UPDATE=1" >> "$GITHUB_ENV"
