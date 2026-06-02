@@ -10,6 +10,7 @@ jobs:
       contents: write
     steps:
       - name: Check the version of CustomPinyinDictionary
+        id: check-version
         run: |
           latest=$(gh --repo wuhgit/CustomPinyinDictionary \
             release view --json body --jq ".body" | head -n 1 | cut -c 4-12)
@@ -17,15 +18,15 @@ jobs:
             release list --json tagName --jq ".[0].tagName" 2>/dev/null || echo "")
 
           if [ "$now" != "$latest" ]; then
-            echo "NEED_UPDATE=1" >> "$GITHUB_ENV"
             echo "VERSION=$latest" >> "$GITHUB_ENV"
+            echo "NEED_UPDATE=1" >> "$GITHUB_OUTPUT"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Bump the txt format dictionary
+        if: ${{ steps.check-version.outputs.NEED_UPDATE == '1' }}
         run: |
-          if [ ! "$NEED_UPDATE" ] && exit 0
           sudo apt-get update
           sudo apt-get install -y libime-bin
           gh --repo wuhgit/CustomPinyinDictionary \
