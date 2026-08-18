@@ -28,6 +28,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download ImewlConverter
+        if: ${{ steps.check-version.outputs.NEED_UPDATE == '1' }}
+        run: |
+          wget https://github.com/studyzy/imewlconverter/releases/latest/download/imewlconverter_linux-x64.tar.gz
+          tar -xvf imewlconverter_linux-x64.tar.gz
+          install -Dm755 ImeWlConverterCmd -t /usr/local/bin
+
       - name: Bump the txt format dictionary
         if: ${{ steps.check-version.outputs.NEED_UPDATE == '1' }}
         run: |
@@ -36,8 +43,9 @@ jobs:
           gh --repo wuhgit/CustomPinyinDictionary \
             release download -p "CustomPinyinDictionary_Fcitx.dict"
           libime_pinyindict -d CustomPinyinDictionary_Fcitx.dict CustomPinyinDictionary_Fcitx.txt
+          ImeWlConverterCmd -i:libpy CustomPinyinDictionary_Fcitx.txt -o:rime CustomPinyinDictionary.dict.yaml
           gh --repo "$GITHUB_REPOSITORY" \
             release create "$VERSION" ./CustomPinyinDictionary_Fcitx.txt -t "$VERSION" \
-            -n "Auto-generating txt version of CustomPinyinDictionary"
+            -n "Auto-generating rime version of CustomPinyinDictionary"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
