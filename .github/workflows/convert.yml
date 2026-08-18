@@ -43,7 +43,7 @@ jobs:
           gh --repo wuhgit/CustomPinyinDictionary \
             release download -p "CustomPinyinDictionary_Fcitx.dict"
           libime_pinyindict -d CustomPinyinDictionary_Fcitx.dict CustomPinyinDictionary_Fcitx.txt
-          ImeWlConverterCmd -i:libpy CustomPinyinDictionary_Fcitx.txt -o:rime CustomPinyinDictionary.dict.yaml
+          ImeWlConverterCmd --input-format libpy --output-format rime --output CustomPinyinDictionary.dict.yaml CustomPinyinDictionary_Fcitx.txt
           gh --repo "$GITHUB_REPOSITORY" \
             release create "$VERSION" ./CustomPinyinDictionary_Fcitx.txt -t "$VERSION" \
             -n "Auto-generating rime version of CustomPinyinDictionary"
