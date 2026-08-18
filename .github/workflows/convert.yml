@@ -35,7 +35,7 @@ jobs:
           tar -xvf imewlconverter_linux-x64.tar.gz
           install -Dm755 ImeWlConverterCmd -t /usr/local/bin
 
-      - name: Bump the txt format dictionary
+      - name: Bump the rime format dictionary
         if: ${{ steps.check-version.outputs.NEED_UPDATE == '1' }}
         run: |
           sudo apt-get update
@@ -45,7 +45,7 @@ jobs:
           libime_pinyindict -d CustomPinyinDictionary_Fcitx.dict CustomPinyinDictionary_Fcitx.txt
           ImeWlConverterCmd --input-format libpy --output-format rime --output CustomPinyinDictionary.dict.yaml CustomPinyinDictionary_Fcitx.txt
           gh --repo "$GITHUB_REPOSITORY" \
-            release create "$VERSION" ./CustomPinyinDictionary_Fcitx.txt -t "$VERSION" \
+            release create "$VERSION" ./CustomPinyinDictionary.dict.yaml -t "$VERSION" \
             -n "Auto-generating rime version of CustomPinyinDictionary"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
